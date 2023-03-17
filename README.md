@@ -6,6 +6,6 @@ Discordサーバーの勧誘用の疑似Embedです。
 
 index.htmlが参加ボタン
 
-guildフォルダにはDiscordサーバー説明のhtmlが入っています。
+descフォルダにはDiscordサーバー説明のhtmlが入っています。
 
 imagesフォルダにはogpの画像が入っています。
