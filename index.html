@@ -2,13 +2,41 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url=https://discord.gg/X2jYXPETRq">
+    <title>Discord - サーバーに参加</title>
+    <meta name="theme-color" content="#ff0000">
     <meta property="og:title" content="サーバーに参加">
     <meta property="og:url" content="https://discord.gg/X2jYXPETRq">
-    <meta name="theme-color" content="#ff0000">
-    <title>Discord</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        text-align: center;
+        padding-top: 20vh;
+      }
+      .redirect-message {
+        font-size: 1.2em;
+        color: #333;
+      }
+      .fallback-link {
+        color: #ff0000;
+        text-decoration: none;
+      }
+      .fallback-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+    <script>
+      window.onload = function () {
+        window.location.href = "https://discord.gg/X2jYXPETRq";
+      };
+    </script>
   </head>
   <body>
-    <p>読み込み中...</p>
+    <p class="redirect-message">
+      リダイレクト中です…<br>
+      自動で転送されない場合は
+      <a class="fallback-link" href="https://discord.gg/X2jYXPETRq">こちら</a>をクリックしてください。
+    </p>
   </body>
 </html>
