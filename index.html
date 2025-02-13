@@ -6,37 +6,58 @@
     <meta name="theme-color" content="#ff0000">
     <meta property="og:title" content="サーバーに参加">
     <meta property="og:url" content="https://discord.gg/X2jYXPETRq">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body {
         margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: #fff;
-        text-align: center;
-        padding-top: 20vh;
+        background: linear-gradient(135deg, #ff6b6b, #f06595);
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       }
-      .redirect-message {
+      .redirect-container {
+        text-align: center;
+      }
+      .spinner {
+        margin: 20px auto;
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255,255,255,0.3);
+        border-top: 5px solid #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .message {
         font-size: 1.2em;
-        color: #333;
       }
       .fallback-link {
-        color: #ff0000;
-        text-decoration: none;
-      }
-      .fallback-link:hover {
+        color: #fff;
         text-decoration: underline;
       }
     </style>
     <script>
-      window.onload = function () {
-        window.location.href = "https://discord.gg/X2jYXPETRq";
-      };
+      window.addEventListener("load", function(){
+        setTimeout(function(){
+          window.location.href = "https://discord.gg/X2jYXPETRq";
+        }, 2000);
+      });
     </script>
   </head>
   <body>
-    <p class="redirect-message">
-      リダイレクト中です…<br>
-      自動で転送されない場合は
-      <a class="fallback-link" href="https://discord.gg/X2jYXPETRq">こちら</a>をクリックしてください。
-    </p>
+    <div class="redirect-container">
+      <div class="spinner"></div>
+      <p class="message">
+        リダイレクト中です…<br>
+        自動で転送されない場合は 
+        <a class="fallback-link" href="https://discord.gg/X2jYXPETRq">こちら</a> をクリックしてください。
+      </p>
+    </div>
   </body>
 </html>
