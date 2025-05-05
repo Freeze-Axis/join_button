@@ -4,667 +4,281 @@
   <meta charset="UTF-8">
   <title>Freeze Axis - Discordサーバー</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="凍てついた空気が漂うFreeze Axis。\nFreeze Axisはあなたの居場所を提供します。">
+  <meta name="description" content="Freeze Axisはあなたの居場所を提供します。">
   <meta name="keywords" content="Freeze, Discord, Frozen, 雑談, サーバー">
   <meta name="theme-color" content="#00aaff">
   <meta name="robots" content="index,follow">
+
   <!-- Open Graph / Twitter Cards -->
   <meta property="og:title" content="Freeze Axis">
-  <meta property="og:description" content="
-『Freeze Axis』は、「つっくん」によって設立された組織であり、
-現在、注目を集めているサーバーの一つです。
-本組織は、2021年頃に界隈で高い評価を受け、
-大きな影響を与えた『Freeze』の後継として誕生しました。
-その理念を受け継ぎながら、新たな時代を切り拓く存在として活動を続けています。"
+  <meta property="og:description" content="Freeze Axisは「つっくん」により創設されました。">
   <meta property="og:image" content="https://via.placeholder.com/1200x630/00aaff/ffffff?text=Freeze+Axis">
   <meta property="og:url" content="https://example.com/desc.html">
   <meta property="og:site_name" content="Discordサーバー">
   <meta name="twitter:card" content="summary_large_image">
+
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
-    /* CSS Variables */
+    /* VARIABLES & RESET */
     :root {
-      --primary-color: #00aaff;
+      --primary: #00aaff;
       --primary-dark: #0088cc;
-      --secondary-color: #0077aa;
-      --bg-color: #f0f8ff;
-      --text-color: #333;
-      --card-bg: #fff;
-      --overlay-color: rgba(0,0,50,0.4);
+      --secondary: #0077aa;
+      --bg-dark: #1a1a1a;
+      --text-light: #fff;
+      --card-bg-dark: #2a2a2a;
+      --overlay: rgba(0, 0, 50, 0.4);
+      --transition: 0.3s ease;
     }
-    /* RESET & BASE */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --text: var(--text-light);
+      --card-bg: var(--card-bg-dark);
     }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html, body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
+      font-family:'Poppins',sans-serif;
+      background: var(--bg);
+      color: var(--text);
       scroll-behavior: smooth;
-      line-height: 1.6;
+      line-height:1.6;
     }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-    ul {
-      list-style: none;
-    }
-    button {
-      font-family: inherit;
-      cursor: pointer;
-    }
-    /* CONTAINER & UTILITIES */
-    .container {
-      width: 90%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .text-center { text-align: center; }
-    .mt-20 { margin-top: 20px; }
-    .mb-20 { margin-bottom: 20px; }
-    .p-20 { padding: 20px; }
-    .mb-40 { margin-bottom: 40px; }
-    
-    /* NAVIGATION BAR */
-    nav {
+    a { text-decoration:none; color:inherit; }
+    ul { list-style:none; }
+    button { font-family:inherit; cursor:pointer; border:none; background:none; }
+
+    /* Canvas for snow */
+    #bg-canvas {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: var(--primary-color);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      z-index: 1100;
-      transition: padding 0.3s ease, background 0.3s ease;
-      padding: 20px 0;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
     }
-    nav.scrolled {
-      padding: 10px 0;
-      background: rgba(0, 170, 255, 0.95);
+
+    /* Gradient background animation */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-    .nav-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    body[data-theme="dark"] {
+      background: linear-gradient(120deg, #001f3f, #004080, #001f3f);
+      background-size: 600% 600%;
+      animation: gradientBG 20s ease infinite;
     }
-    .logo {
-      font-size: 1.8em;
-      font-weight: 600;
-      color: #fff;
-      letter-spacing: 1px;
-      cursor: pointer;
+
+    /* UTILITIES */
+    .container { width:90%; max-width:1200px; margin:0 auto; }
+    .text-center { text-align:center; }
+    .mt-20 { margin-top:20px; }
+    .mb-20 { margin-bottom:20px; }
+    .p-20 { padding:20px; }
+    .btn { display:inline-block; padding:12px 24px; border-radius:50px; text-transform:uppercase; letter-spacing:1px; transition: background var(--transition), transform var(--transition); }
+    .btn-primary { background:var(--primary); color:#fff; }
+    .btn-primary:hover, .btn-primary:focus { background:var(--primary-dark); transform: translateY(-3px); outline:none; }
+
+    /* NAVIGATION */
+    nav {
+      position:fixed; top:0; left:0; width:100%;
+      background:var(--primary);
+      box-shadow:0 2px 5px rgba(0,0,0,0.2);
+      z-index:1000;
+      padding:20px 0; transition: padding var(--transition), background var(--transition);
     }
-    .logo:hover,
-    .logo:focus {
-      animation: pulse 1s infinite;
-      outline: none;
+    nav.scrolled { padding:10px 0; background:rgba(0,170,255,0.95); }
+    .nav-container { display:flex; justify-content:space-between; align-items:center; }
+    .logo { font-size:1.8em; font-weight:600; color:#fff; letter-spacing:1px; }
+    .logo:focus { outline:2px dashed #fff; }
+    .nav-links { display:flex; gap:20px; }
+    .nav-links a { font-weight:500; transition:color var(--transition); }
+    .nav-links a:hover, .nav-links a:focus { color:#f0f8ff; outline:none; }
+    .hamburger { display:none; flex-direction:column; gap:5px; }
+    .hamburger span { width:25px; height:3px; background:#fff; border-radius:2px; transition:all var(--transition); }
+    .hamburger:focus { outline:2px dashed #fff; }
+    @media(max-width:768px){
+      .nav-links { position:absolute; top:60px; right:20px; flex-direction:column; background:var(--primary); padding:10px 20px; border-radius:5px; display:none; }
+      .nav-links.active { display:flex; }
+      .hamburger { display:flex; }
     }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    /* Navigation Links */
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
-    .nav-links a {
-      color: #fff;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-    .nav-links a:hover,
-    .nav-links a:focus {
-      color: #f0f8ff;
-      outline: none;
-    }
-    /* Hamburger Menu for Mobile */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-      border: none;
-      background: none;
-    }
-    .hamburger:focus {
-      outline: 2px dashed #fff;
-    }
-    .hamburger span {
-      height: 3px;
-      width: 25px;
-      background: #fff;
-      margin-bottom: 5px;
-      border-radius: 2px;
-      transition: all 0.3s ease;
-    }
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-        position: absolute;
-        top: 60px;
-        right: 20px;
-        background: var(--primary-color);
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      }
-      .nav-links.active {
-        display: flex;
-      }
-      .hamburger {
-        display: flex;
-      }
-    }
-    
-    /* HERO SECTION */
+
+    /* HERO */
     .hero {
-      height: 100vh;
-      background: url('https://source.unsplash.com/1600x900/?frozen') no-repeat center center/cover;
-      /* 背景固定はモバイルで問題があるため条件付きで調整 */
-      background-attachment: fixed;
-      position: relative;
+      position:relative; height:100vh;
+      background: url('https://source.unsplash.com/1600x900/?frozen') no-repeat center/cover;
+      background-attachment:fixed;
+      display:flex; align-items:center; justify-content:center;
+      z-index: 1;
     }
-    @media (max-width: 768px) {
-      .hero {
-        background-attachment: scroll;
-      }
-    }
+    @media(max-width:768px){ .hero { background-attachment:scroll; } }
     .hero::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--overlay-color);
+      content:""; position:absolute; inset:0; background:var(--overlay);
     }
     .hero-content {
-      position: relative;
-      z-index: 2;
-      color: #fff;
-      text-align: center;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 0 20px;
-      animation: fadeIn 1.5s ease-out;
+      position:relative; z-index:2; text-align:center; padding:0 20px;
+      animation:fadeIn 1.5s ease-out;
     }
-    .hero-content h1 {
-      font-size: 3.5em;
-      margin-bottom: 20px;
-      letter-spacing: 2px;
-      animation: fadeInDown 1.5s ease-out, float 3s ease-in-out infinite;
+    .hero-content h1 { font-size:3.5em; margin-bottom:20px; letter-spacing:2px; animation:gentleFloat 5s ease-in-out infinite; }
+    .hero-content p { margin-bottom:15px; animation:fadeInUp 1.5s ease-out; }
+
+    /* SCROLL TOP BUTTON */
+    #scrollTop {
+      position:fixed; bottom:30px; right:30px; display:none;
+      width:45px; height:45px; background:var(--primary);
+      border-radius:50%; align-items:center; justify-content:center;
+      cursor:pointer; z-index:1001; transition:opacity var(--transition);
     }
-    .hero-content p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-      animation: fadeInUp 1.5s ease-out;
-    }
-    .hero-content .tagline {
-      font-size: 1.5em;
-      margin-bottom: 30px;
-      opacity: 0.8;
-      animation: fadeInUp 2s ease-out;
-    }
-    .hero .join-btn {
-      display: inline-block;
-      padding: 15px 30px;
-      background: var(--primary-color);
-      color: #fff;
-      border-radius: 50px;
-      font-size: 1.2em;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: background 0.3s ease, transform 0.3s ease;
-      animation: fadeIn 2s ease-out;
-    }
-    .hero .join-btn:hover,
-    .hero .join-btn:focus {
-      background: var(--primary-dark);
-      transform: translateY(-3px);
-      outline: none;
-    }
-    
-    /* FEATURES SECTION */
-    .features {
-      background: #f0fbff;
-      padding: 100px 20px;
-    }
-    .features .section-title {
-      font-size: 2.5em;
-      color: var(--secondary-color);
-      margin-bottom: 40px;
-      text-align: center;
-    }
-    .features .cards {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
-    }
-    .features .card {
-      background: var(--card-bg);
-      width: 300px;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-      padding: 20px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-    }
-    .features .card::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: var(--primary-color);
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-    }
-    .features .card:hover,
-    .features .card:focus-within {
-      transform: translateY(-10px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    }
-    .features .card:hover::after,
-    .features .card:focus-within::after {
-      transform: scaleX(1);
-    }
-    .features .card .card-content h3 {
-      font-size: 1.5em;
-      color: var(--secondary-color);
-      margin-bottom: 10px;
-    }
-    .features .card .card-content p {
-      font-size: 1em;
-      line-height: 1.6;
-      color: #555;
-      margin-bottom: 15px;
-    }
-    .features .card .card-content button {
-      padding: 10px 20px;
-      border: none;
-      background: var(--primary-color);
-      color: #fff;
-      border-radius: 5px;
-      transition: background 0.3s ease;
-    }
-    .features .card .card-content button:hover,
-    .features .card .card-content button:focus {
-      background: var(--primary-dark);
-      outline: none;
-    }
-    
-    /* SCROLL ANIMATION (初期状態) */
-    .scroll-animate {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    .scroll-animate.scrolled {
-      opacity: 1;
-      transform: translateY(0);
-      transition: transform 0.6s ease, opacity 0.6s ease;
-    }
-    
-    /* MODAL WINDOW */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1200;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    #scrollTop:focus { outline:2px dashed #fff; }
+
+    /* MODAL */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(5px); justify-content:center; align-items:center; padding:20px; }
+    .modal[aria-hidden="false"] { display:flex; }
     .modal-content {
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      width: 100%;
-      max-width: 600px;
-      position: relative;
-      animation: modalFadeIn 0.5s ease;
-    }
-    @keyframes modalFadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
+      background:var(--card-bg); border-radius:12px; max-width:600px; width:100%;
+      padding:30px; position:relative; animation:modalFadeIn 0.4s ease;
     }
     .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 1.5em;
-      cursor: pointer;
-      color: #333;
-      background: none;
-      border: none;
+      position:absolute; top:15px; right:15px; font-size:1.5em; color:var(--text);
+      background:none; border:none; cursor:pointer;
     }
-    .modal-close:hover,
-    .modal-close:focus {
-      color: var(--primary-dark);
-      outline: none;
-    }
-    
-    /* SNOW FALL CANVAS */
-    #snow-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 1000;
-    }
-    
-    /* KEYFRAMES */
-    @keyframes fadeInDown {
-      0% { opacity: 0; transform: translateY(-50px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(50px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0); }
-    }
-    
+    .modal-close:focus { outline:2px dashed var(--primary); }
+
     /* FOOTER */
-    footer {
-      background: var(--primary-color);
-      color: #fff;
-      padding: 20px 0;
-    }
-    footer a {
-      color: #fff;
-      transition: color 0.3s ease;
-    }
-    footer a:hover,
-    footer a:focus {
-      color: #f0f8ff;
-      outline: none;
-    }
+    footer { background:var(--primary); color:#fff; padding:20px 0; }
+    footer a:hover, footer a:focus { color:#f0f8ff; outline:none; }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+    @keyframes fadeInUp { 0%{opacity:0;transform:translateY(30px);} 100%{opacity:1;transform:translateY(0);} }
+    @keyframes gentleFloat { 0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);} }
+    @keyframes modalFadeIn { from{opacity:0;transform:scale(0.8);} to{opacity:1;transform:scale(1);} }
   </style>
 </head>
-<body>
-  <!-- SNOW FALL CANVAS -->
-  <canvas id="snow-canvas" aria-hidden="true"></canvas>
-  
-  <!-- NAVIGATION BAR -->
-  <nav id="navbar" role="navigation">
+<body data-theme="dark">
+  <!-- Canvas：雪アニメーション -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
     <div class="nav-container container">
       <div class="logo" tabindex="0">Freeze Axis</div>
-      <!-- ハンバーガーボタンにaria属性を追加 -->
-      <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-controls="nav-links" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
+      <button class="hamburger" id="hamburger" aria-label="メニューを開閉" aria-controls="nav-links" aria-expanded="false">
+        <span></span><span></span><span></span>
       </button>
       <div class="nav-links" id="nav-links">
         <a href="#hero">トップ</a>
-        <a href="#features">特徴</a>
         <a href="index.html">参加</a>
       </div>
     </div>
   </nav>
-  
-  <!-- HERO SECTION -->
+
+  <!-- HERO -->
   <section class="hero" id="hero" role="banner">
     <div class="hero-content container">
-      <h1>Freeze Axisにようこそ</h1>
-      <p>凍てつく世界で、あなたのクールな居場所を。</p>
-      <p class="tagline">新たな冷気の中で、あなたの物語が始まる</p>
-      <a href="index.html" class="join-btn">今すぐ参加</a>
+      <h1>Freeze Axis にようこそ</h1>
+      <p>つまらない毎日と決別しましょう。<br><span class="tagline">新たな冷気の中で、あなたの物語が始まる。</span></p>
+      <a href="index.html" class="btn btn-primary">今すぐ参加</a>
     </div>
   </section>
-  
-  <!-- FEATURES SECTION -->
-  <section class="features" id="features">
-    <div class="container">
-      <h2 class="section-title">サーバーの特徴</h2>
-      <div class="cards">
-        <!-- FEATURE CARD 1 -->
-        <div class="card scroll-animate" tabindex="0">
-          <div class="card-content">
-            <h3>自由な空間</h3>
-            <p>言論統制が無く、自由気ままなサーバーです。</p>
-            <button class="open-modal" data-modal="modal-feature1">詳細を見る</button>
-          </div>
-        </div>
-        <!-- FEATURE CARD 2 -->
-        <div class="card scroll-animate" tabindex="0">
-          <div class="card-content">
-            <h3>便利なツールの数々</h3>
-            <p>WEB版セルボ荒ツール,DMグループ追加＆作成ツール,DMグループ退出ツールなど。\nその他にも様々な便利で役立つツールを提供しています。</p>
-            <button class="open-modal" data-modal="modal-feature2">詳細を見る</button>
-          </div>
-        </div>
-        <!-- FEATURE CARD 3 -->
-        <div class="card scroll-animate" tabindex="0">
-          <div class="card-content">
-            <h3>定期イベント</h3>
-            <p>季節ごとの特別イベントやチャレンジで、盛り上がるコミュニティ体験を提供。</p>
-            <button class="open-modal" data-modal="modal-feature3">詳細を見る</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
+
+  <!-- SCROLL TOP BUTTON -->
+  <button id="scrollTop" aria-label="トップへ戻る">↑</button>
+
   <!-- FOOTER -->
   <footer>
     <div class="container text-center p-20">
-      <p>&copy; 2025 Freeze Axis. All Rights Reserved.</p>
-      <p>
-        <a href="#hero">トップへ戻る</a> | 
-        <a href="#features">特徴</a>
-      </p>
+      <p>&copy; 2025 Freeze Axis. All Rights Reserved。</p>
+      <p><a href="#hero">トップへ戻る</a></p>
     </div>
   </footer>
-  
-  <!-- MODAL WINDOWS (role, aria-modal, tabindexを追加) -->
-  <div id="modal-feature1" class="modal" role="dialog" aria-modal="true">
+
+  <!-- MODAL -->
+  <div id="modal-feature1" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-content" tabindex="0">
       <button class="modal-close" aria-label="閉じる">&times;</button>
       <h2>Memberの質について</h2>
-      <p>
-        Freeze Axisでは、毎日のように荒んだ論争が繰り広げられていて、<br>
-        常にクレイジーな人々で溢れています。<br>
-        しかし、これら論争を行う殆どの実態は温情深い方々ばかりです。<br>
-        敵意を向けたり論争内で暴言を浴びせたりをしなければ、<br>
-        優しく接してくれて、尚且つ、建設的な議論をしてくれます。
-      </p>
+      <p>Freeze Axisでは…</p>
     </div>
   </div>
-  <div id="modal-feature2" class="modal" role="dialog" aria-modal="true">
-    <div class="modal-content" tabindex="0">
-      <button class="modal-close" aria-label="閉じる">&times;</button>
-      <h2>自由な雑談について</h2>
-      <p>
-        固定観念を捨て、自由な発言を歓迎する雰囲気は、<br>
-        まるで氷が溶け出すような柔軟さを象徴します。<br>
-        ここでは誰もが自分らしく、意見を交わすことができます。
-      </p>
-    </div>
-  </div>
-  <div id="modal-feature3" class="modal" role="dialog" aria-modal="true">
-    <div class="modal-content" tabindex="0">
-      <button class="modal-close" aria-label="閉じる">&times;</button>
-      <h2>定期イベントについて</h2>
-      <p>
-        季節に合わせたイベントや、日々のちょっとしたチャレンジ。<br>
-        Freeze Axis のイベントは、コミュニティを盛り上げる大きな原動力です。
-      </p>
-    </div>
-  </div>
-  
+
   <script>
-    // SNOW FALL ANIMATION
     (() => {
-      const canvas = document.getElementById("snow-canvas");
-      const ctx = canvas.getContext("2d");
-      let width = window.innerWidth;
-      let height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      
-      let wind = 0;
-      class Snowflake {
-        constructor() {
-          this.reset();
-        }
-        reset() {
-          this.x = Math.random() * width;
-          this.y = Math.random() * height;
-          this.radius = Math.random() * 3 + 1;
-          this.speedY = Math.random() * 1 + 0.5;
-          this.speedX = Math.random() * 0.5 - 0.25;
-          this.opacity = Math.random() * 0.5 + 0.5;
-        }
-        update(wind) {
-          this.x += this.speedX + wind;
-          this.y += this.speedY;
-          if (this.y > height) {
-            this.y = 0;
-            this.x = Math.random() * width;
-          }
-          if (this.x > width || this.x < 0) {
-            this.x = (this.x + width) % width;
-          }
-        }
-        draw(ctx) {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(255, 255, 255," + this.opacity + ")";
-          ctx.fill();
-        }
+      const canvas = document.getElementById('bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles = [], particleCount = 200;
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
       }
-      
-      const snowflakes = [];
-      const maxSnowflakes = 200;
-      for (let i = 0; i < maxSnowflakes; i++) {
-        snowflakes.push(new Snowflake());
-      }
-      
-      function animateSnow() {
-        wind = Math.sin(Date.now() / 5000) * 0.5;
-        ctx.clearRect(0, 0, width, height);
-        for (let flake of snowflakes) {
-          flake.update(wind);
-          flake.draw(ctx);
-        }
-        requestAnimationFrame(animateSnow);
-      }
-      
-      animateSnow();
-      window.addEventListener("resize", () => {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-      });
-    })();
-    
-    // MODAL FUNCTIONALITY (クリック・背景クリック・ESCキーで閉じる)
-    (() => {
-      const openModalButtons = document.querySelectorAll(".open-modal");
-      const modals = document.querySelectorAll(".modal");
-      
-      openModalButtons.forEach(button => {
-        button.addEventListener("click", function() {
-          const modalId = this.getAttribute("data-modal");
-          const modal = document.getElementById(modalId);
-          if (modal) {
-            modal.style.display = "flex";
-            // モーダル表示時にフォーカス移動
-            modal.querySelector('.modal-content').focus();
-          }
-        });
-      });
-      
-      const closeModal = modal => {
-        modal.style.display = "none";
-      };
-      
-      document.querySelectorAll(".modal-close").forEach(button => {
-        button.addEventListener("click", function() {
-          const modal = this.closest(".modal");
-          closeModal(modal);
-        });
-      });
-      
-      // 背景クリックで閉じる
-      modals.forEach(modal => {
-        modal.addEventListener("click", function(e) {
-          if (e.target === modal) {
-            closeModal(modal);
-          }
-        });
-      });
-      
-      // ESCキーでモーダルを閉じる
-      document.addEventListener("keydown", e => {
-        if (e.key === "Escape") {
-          modals.forEach(modal => {
-            if (modal.style.display === "flex") {
-              closeModal(modal);
-            }
+      window.addEventListener('resize', resize);
+      resize();
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: 1 + Math.random() * 4,  // 大きさ幅を微調整
+            speed: 0.3 + Math.random() * 0.5  // 降下速度を遅めに
           });
         }
-      });
-    })();
-    
-    // SCROLL ANIMATION using IntersectionObserver for improved performance
-    (() => {
-      const scrollElements = document.querySelectorAll(".scroll-animate");
-      const observerOptions = {
-        threshold: 0.2
-      };
-      const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("scrolled");
-            observer.unobserve(entry.target);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.beginPath();
+        particles.forEach(p => {
+          ctx.moveTo(p.x, p.y);
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+        });
+        ctx.fill();
+
+        // 更新：垂直降下のみ
+        particles.forEach(p => {
+          p.y += p.speed + p.r * 0.05;
+          // 画面外に出たら上に戻す
+          if (p.y > H + 5) {
+            p.y = -10;
+            p.x = Math.random() * W;
           }
         });
-      }, observerOptions);
-      scrollElements.forEach(el => observer.observe(el));
+
+        requestAnimationFrame(draw);
+      }
+
+      initParticles();
+      draw();
     })();
     
-    // NAVBAR SHRINK ON SCROLL & HAMBURGER TOGGLE with ARIA attribute update
-    (() => {
-      const navbar = document.getElementById("navbar");
-      const hamburger = document.getElementById("hamburger");
-      const navLinks = document.getElementById("nav-links");
-      window.addEventListener("scroll", () => {
-        if (window.scrollY > 50) {
-          navbar.classList.add("scrolled");
-        } else {
-          navbar.classList.remove("scrolled");
-        }
+    // ナビなど既存のスクリプト
+    const navbar = document.getElementById('navbar');
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    const scrollTop = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+      scrollTop.style.display = window.scrollY > 300 ? 'flex' : 'none';
+    });
+    hamburger.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('active');
+      hamburger.setAttribute('aria-expanded', open);
+    });
+    scrollTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+    document.querySelectorAll('.modal-close').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.target.closest('.modal').setAttribute('aria-hidden','true');
       });
-      hamburger.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
-        const expanded = hamburger.getAttribute("aria-expanded") === "true" ? "false" : "true";
-        hamburger.setAttribute("aria-expanded", expanded);
-      });
-    })();
-    
-    console.log("Freeze Axis - Loaded successfully");
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal[aria-hidden="false"]').forEach(m => m.setAttribute('aria-hidden','true'));
+      }
+    });
   </script>
 </body>
 </html>
